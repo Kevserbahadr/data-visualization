@@ -1,0 +1,901 @@
+---
+title: "R veri Görselleştirme Ders Notu"
+author: "Kevser Bahadır"
+output:
+  html_document:
+    toc: true
+    toc_float: true 
+  date: " 'r format(Sys.time(), '%d %B %Y')'"
+---
+# HATIRLATMA 
+
+```{r warning=FALSE}
+
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+df <- tibble(
+  kullanım = factor(c("hi" , "hs") , levels= c("hi", "hs")),
+  sure= c(100,180)
+)
+ggplot(data = df ,aes(x=kullanım , y=sure , fill = kullanım))+
+  geom_bar(colours ="black", fill = "orange" , stat = "identity") +
+  guides(fill = FALSE) + 
+  xlab("haftaıcı ve haftasonu") + ylab("kullanım surelerı") + 
+  ggtitle("telefon kullanım istatistikleri")
+
+
+
+```
+
+# 1. **TEK DEĞİŞKENLİ GÖRSELLEŞTİRME**
+
+## 1.1 KESİKLİ DEĞİŞKEN
+
+Bu bir kategorik değişken anlamına gelir örneğin cinsiyet, semt,ilçe anne, baba,rütbe vs.
+bar plot ile görselleşecek ise iki türlü yapılır. birincisi frekans diğeri mutlak değerine göre.
+
+```{r warning=FALSE}
+df <- tibble(
+  kullanım = c(rep("hi" , 20), rep("hs" , 10))
+  )
+
+#Burada evet bir kategirok değişken var ama karşıda değeri ok gözlemleyeceğim şey sadece frekansı
+
+
+
+
+```
+
+## 1.2 SÜREKLİ DEĞİŞKEN
+
+AÇIKLAMA
+
+
+```{r warning=FALSE}
+df <- tibble(
+  kullanım = factor(c("hi", "hs"), levels= c("hi", "hs")),
+  sure = c(100,180)
+)
+df
+```
+
+## **KESİKLİ DEĞİŞKEN**
+
+### SÜTUN GRAFİĞİ *(geom_bar)*
+
+```{r warning=FALSE}
+ df <- tibble(
+    kullanım = factor(c("hi" , "hs") , levels= c("hi", "hs")),
+    sure= c(100,180)
+ )
+ggplot(df, aes( x = kullanım , y = sure)) +
+  geom_bar( stat = "identity") 
+  
+
+```
+
+
+### ÇİZGİ GRAFİĞİ *(geom_line)*
+
+Kategorik değişkenlerin grafiğidir.
+
+```{r warning=FALSE}
+df <- tibble(
+    kullanım = factor(c("hi" , "hs") , levels= c("hi", "hs")),
+    sure= c(100,180)
+ )
+ggplot(df, aes( x = kullanım,y= sure , group = 1)) +
+  geom_line()
+```
+
+
+ örneğin aile fertlerinin boylarının çizgi grafiği 
+ 
+```{r warning=FALSE}
+df <- tibble(
+    fertler = factor(c("baba" , "anne" , "çucuk"), levels = c("baba" , "anne" , "çucuk")),
+    boylar= c(180,160,120)
+ )
+ggplot(df, aes( x = fertler, y= boylar , group = 1)) +
+  geom_line()
+```
+
+
+### NOKTA GRAFİĞİ *(GEOM_POİNT)*
+
+```{r warning=FALSE}
+df <- tibble(
+    fertler = factor(c("baba" , "anne" , "çucuk"), levels = c("baba" , "anne" , "çucuk")),
+    boylar= c(180,160,120)
+ )
+ggplot(df, aes( x = fertler, y= boylar , group = 1)) +
+  geom_point()
+```
+
+### ÇİZGİ GRAFİĞİ İLE NOKTA GRAFİĞİNİN BİRLEŞİMİ
+
+```{r warning=FALSE}
+df <- tibble(
+    fertler = factor(c("baba" , "anne" , "çucuk"), levels = c("baba" , "anne" , "çucuk")),
+    boylar= c(180,160,120)
+ )
+ggplot(df, aes( x = fertler, y= boylar , group = 1)) +
+  geom_line(colour= "pink" , size = 2.0) +
+  geom_point( colour =  "gray" , )
+```
+
+ÖZELLEŞTİREBİLİRİZ ÖRNEĞİN;
+
+```{r warning=FALSE}
+df <- tibble(
+    fertler = factor(c("baba" , "anne" , "çucuk"), levels = c("baba" , "anne" , "çucuk")),
+    KİLO = c(60,75,10)
+ )
+ggplot(df, aes( x = fertler, y= KİLO , group = 1)) +
+  geom_line( colour = "red" , linetype = "dashed" , size= 2.0) +
+  geom_point(colour = "blue" , size = 2.5 , shape = 25 , fill = "white")
+```
+
+KİLO, yani y eksenini 0'dan başlatarak grafiği daha anlamlı yapabiliriz. (expand_limits)
+
+```{r warning=FALSE}
+df <- tibble(
+    fertler = factor(c("baba" , "anne" , "çucuk"), levels = c("baba" , "anne" , "çucuk")),
+    KİLO = c(60,75,10)
+ )
+ggplot(df, aes( x = fertler, y= KİLO , group = 1)) +
+  geom_line( colour = "red" , linetype = "dashed" , size= 2.0) +
+  geom_point(colour = "blue" , size = 2.5 , shape = 25 , fill = "white") +
+  expand_limits( y = 0)
+```
+
+### PASTA GRAFİĞİ
+
+```{r warning=FALSE}
+data <- data.frame(
+  group=LETTERS[1:10],
+  value=c(10,4,18,21,2,40,47,55,69,1)
+)
+
+ggplot(data, aes(x="", y=value, fill=group)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0)
+  
+```
+
+
+## 1.2 **SÜREKLİ DEĞİŞKEN**
+
+verimiz günlük telefon kullanımı.
+iki tane kategorik değişkenim var. 
+
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("e" , "k") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+df
+```
+ben bu veriyi nasıl görselleştirebilirim?
+
+### HİSTOGRAM *(GEOM_HİSTOGRAM)*
+
+```{r warning=FALSE}
+ggplot(df, aes(sure)) +
+  geom_histogram()
+```
+
+daha okunabilir olması için;
+
+```{r warning=FALSE}
+ggplot(df, aes(sure)) +
+  geom_histogram(binwidth = 0.7)
+```
+
+özelleştirelim;
+
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("e" , "k") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure)) +
+  geom_histogram(binwidth = 0.7, colour = "white" , fill= "orange" , size=1) +
+  xlab("GEÇEN SÜRE") + ylab("FREKANS") +
+  ggtitle("TELEFONDA GEÇİRİLEN SÜRE VE KİŞİ SAYISI HİSTOGRAM GRAFİĞİ")
+  
+
+```
+
+
+YORUM = **Telefonda 78 dakika süre geçiren kişi sayısı 10 ile 0 arasındadır. **
+
+### YOĞUNLUK FONKSİYONU *(geom_density)*
+
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("e" , "k") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure)) +
+  geom_density(colour = "pink" , size= 3)
+  
+```
+
+
+_HİSTOGRAMIN ÜSTÜNE ÇİZDİRMEK İSTİYORUM AMA Y EKSENİ UYUŞMAZLIĞI YAŞANIYOR BKNZ_
+
+```{r warning=FALSE}
+
+df <- tibble(
+  cinsiyet = factor(rep(c("e" , "k") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure)) +
+ geom_density(colour = "pink" , size= 3) +
+  geom_histogram(binwidth = 0.7, colour = "white" , fill= "orange" , size=1) +
+  xlab("GEÇEN SÜRE") + ylab("FREKANS") +
+  ggtitle("TELEFONDA GEÇİRİLEN SÜRE VE KİŞİ SAYISI HİSTOGRAM GRAFİĞİ")
+
+```
+ 
+ **PEKİ NASIL DÜZELTİRİZ?**
+ 
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("e" , "k") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure)) +
+  geom_histogram(aes(y=..density..) , binwidth = 0.5, colour = "white" , fill= "purple" , size=1) +
+  geom_density( alpha= 0.4, fill= "orange" , colour = "orange" , size= 1)
+```
+ 
+ not= alpha transparan özellik
+ 
+ *KIRILMALARA GÖRE HİSTOGRAM VE YOGUNLUK GRAFİGİ*
+
+ Elimizde bir veri seti var. Bu verimizde bir adet sürekli bir adet kategorik veri seti var. normallik sağa veya sola çarpıklık direkt histogramı yazdırarak yorumlamak doğru değil. bu yorumu yapabilmek içib kırılıp tekrar göstermemiz gerekir.
+
+ **histogram**
+ 
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("e" , "k") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure , fill = cinsiyet)) +
+  geom_histogram(binwidth = 0.5, alpha= 0.5, possiton="identity")
+```
+ 
+ 
+ **yoğunluk**
+
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("e" , "k") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure , fill = cinsiyet)) +
+  geom_density()
+```
+ 
+ 
+ *KIRILMALARI İKİ AYRI GRAFİKLE GÖSTERMEK İÇİN (facet_grid())*
+ 
+ grafikleri bir arada (yukarıdaki örnek) ya da farklı iki ayrı grafik olarak gösterebiliriz.
+ 
+ 
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("erkek" , "kadın") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure , fill = cinsiyet)) +
+  geom_histogram(binwidth = 0.5 , colour = "gray" , fill = "pink" , alpha= 0.4)+
+  facet_grid(cinsiyet ~ .) +
+  xlab("GEÇEN SÜRE") + ylab("FREKANS") +
+  ggtitle("TELEFONDA GEÇİRİLEN SÜRE VE KİŞİ SAYISI HİSTOGRAM GRAFİĞİ")
+```
+ 
+### BOX / KUTU GRAFİĞİ *(geom_boxplot)*
+ 
+ Verinin kümelenmesini, yığılmasınının dağılımlarını gösterir.
+ 
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("erkek" , "kadın") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes( x = cinsiyet , y= sure , fill =cinsiyet)) +
+  geom_boxplot()+
+  guides(fill= FALSE)+
+  coord_flip()
+  
+```
+ 
+not; coord_flip = şekil yataydan dikey hale getirir. guides(fill= FALSE) ise grafiğin yanında gereksiz açıklama vardı onu siler. 
+
+ 
+### ALAN GRAFİĞİ *(geom_area)*
+ 
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("erkek" , "kadın") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure)) +
+  geom_area(stat="bin" , binwidth= 0.5, colour = "gray" , alpha= .5)
+  
+```
+ 
+### FREKANS GRAFİĞİ *(geom_freqpoly)*
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("erkek" , "kadın") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure)) +
+  geom_freqpoly(colour = "red" , size = 1 , bins = 3)
+```
+ 
+ 
+ 
+### DOT PLOT *(geom_dotplot)*
+ 
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("erkek" , "kadın") , each = 100)),
+  sure = c(rnorm(100, mean=80) , rnorm(100, mean = 81))
+)
+ggplot(df, aes(sure)) +
+  geom_dotplot(binwidth = 0.5 , colour= "purple" , fill ="purple" , alpha= 0.5)
+``` 
+ 
+ 
+# 2. **İKİ DEĞİŞKENLİ GÖRSELLEŞTİRME**
+ 
+## 2.1 SÜREKLİ X , SÜREKLİ Y
+ 
+### SCATTER-PLOT(en çok kullanılan) 
+ verilen iki tane sürekli değişkenin birbirleri ile ilişkisini inceler. 
+
+ 
+```{r warning=FALSE}
+df <- tibble(
+  cinsiyet = factor(rep(c("E", "K") , each=500)),
+  mobil = c(rnorm(500, mean= 80), rnorm(500, mean=82)),
+  web = c(rnorm(500, mean= 82) , rnorm(500, mean= 81))
+)
+df
+
+```
+
+ **soru = mobil ile web de geçirilen süre arasında bir korelasyon ilişkisi var mı?**
+ 
+```{r warning=FALSE}
+ggplot(df, aes(mobil,web)) +
+  geom_point(colour= "brown") +
+  geom_smooth(method= lm )
+```
+ 
+ yorum= mobil kullanımı arttığında web kullanımı artmıyor. 
+ 
+ geom_smooth(method= lm)
+ lm = lineer method 
+ 
+ 
+```{r warning=FALSE}
+ggplot(df, aes(mobil,web)) +
+  geom_point(colour= "brown") +
+  geom_smooth(method= lm , se = FALSE)
+```
+ 
+ se = FALSE = standard error demek. Çizginin etrafındaki yoğunluk gider.
+ 
+```{r warning=FALSE}
+ggplot(df, aes(mobil,web)) +
+  geom_point(colour= "brown") +
+  geom_smooth()
+```
+ 
+ veriyi temsil kabileyeti daha kuvvetli bir veridir. 
+ 
+ 
+ CİNSİYETE GÖRE BAKALIM;
+ 
+```{r warning=FALSE}
+ggplot(df, aes(mobil,web, color= cinsiyet)) +
+  geom_point()
+```
+ 
+Renkleri ayırdı. hangisinin kadın olduğunu hangisinin erkek olduğunu görebiliyoruz. 
+ 
+ 
+```{r warning=FALSE}
+ggplot(df, aes(mobil,web, color = cinsiyet)) +
+  geom_point() + 
+  geom_smooth(method = lm , se = FALSE, formula = 'y ~ x')
+```
+
+eğimleri değişmiş oldu. 
+ 
+ 
+## 2.2 Kesikli X, Sürekli Y
+
+### Sütun grafikleri *(geom_bar)*
+
+```{r warning=FALSE}
+df <- tibble(
+  kullanım= factor(c("hi" , "hs"), levels= c("hi", "hs")),
+  sure =c(100,180)
+)
+ggplot(df, aes(kullanım , sure , fill =kullanım)) +
+  geom_bar(colour = "black", fill= "orange", stat ="identity")
+
+
+
+```
+
+### BOX PLOT *(geom_boxplot)*
+
+```{r warning=FALSE}
+
+df <- tibble(
+  cinsiyet = factor(rep(c("erkek" , "kadın") , each = 500)),
+  sure = c(rnorm(500, mean=80) , rnorm(500, mean = 81))
+)
+ggplot(df, aes( x = cinsiyet , y= sure , fill =cinsiyet)) +
+  geom_boxplot()+
+  guides(fill= FALSE)
+
+
+```
+
+###DOT PLOT *(geom_dotplot)*
+
+```{r warning=FALSE}
+ggplot(df, aes( x = cinsiyet , y= sure , fill =cinsiyet)) +
+  geom_dotplot(binaxis = "y" , stackdir = "center")
+
+
+
+```
+
+### VİOLİN *(geom_violin*)*
+
+```{r warning=FALSE}
+ggplot(df, aes( x = cinsiyet , y= sure , fill =cinsiyet)) +
+  geom_violin(scale= "area")
+
+```
+
+## 2.3 KESİKLİ X, KESİKLİ Y
+(ikisi de kategorik)
+
+```{r warning=FALSE}
+df<- tibble(
+  kullanım = factor(c("hi","hs","hi", "hs"), levels=c("hi","hs")),
+  sure=c(100,180,90,200),
+  cinsiyet= factor(c("e","e","k","k"))
+)
+ggplot(df, aes(kullanım, cinsiyet)) +
+  geom_count()
+```
+
+
+# 3. **GRAFİK BÖLME**
+
+```{r warning=FALSE}
+df<- tibble(
+  c= factor(rep(c("e","k") , each=600)),
+  m = c(rnorm(600, mean= 80), rnorm(600, mean=82)),
+  w= c(rnorm(600, mean= 80), rnorm(600, mean=82)),
+  me= factor(rep(c("a","b","c"), each= 400))
+)
+df
+
+
+
+
+```
+
+
+```{r warning=FALSE}
+df<- tibble(
+  c= factor(rep(c("e","k") , each=600)),
+  m = c(rnorm(600, mean= 80), rnorm(600, mean=82)),
+  w= c(rnorm(600, mean= 80), rnorm(600, mean=82)),
+  me= factor(rep(c("a","b","c"), each= 400))
+)
+t <- ggplot(df, aes(m,w)) +
+  geom_point()
+t
+```
+
+sütun bazında bölme 
+
+```{r}
+t + facet_grid(. ~ c)
+```
+ 
+satıra bölmek için (yıllarda falan kullanıyoruz genelde)
+ 
+ 
+```{r warning=FALSE}
+t + facet_grid( c~ .)
+```
+ 
+
+```{r warning=FALSE}
+t + facet_grid(me ~ c)
+```
+
+# 4. **ZAMAN SERİSİ GÖRSELLEŞTİRME**
+
+```{r warning=FALSE}
+head(economics)
+d <- economics
+ggplot(d , aes(date , pop)) +
+  geom_line()
+
+
+```
+
+tarih değişkeninin tarih değişkeni olduğunu r a göstermemiz lazım. öncı yıl ay gün şeklindedir.
+
+
+```{r}
+head(economics)
+d <- economics
+
+s <- d %>% filter( date > as.Date("2015-1-25"))
+
+ggplot(s, aes(date , pop)) +
+  geom_line()
+```
+
+aynı veri setindeki değişikleri ggplot içinde de yapılabilir. 
+
+```{r}
+
+head(economics)
+d <- economics
+
+s <- d %>% filter( date > as.Date("2015-1-25"))
+
+ggplot(s, aes(date , pop)) +
+  geom_line()
+#şurda geom_line içinde bir şey yazıyordu bak
+
+```
+
+#ÇOKLU ZAMAN SERİSİ GÖRSELLEŞTİRME
+
+variable kategorik değişken iki tane değişkeni var. çizgi olarak gösterdik. 
+
+### ÇOKLU ZAMAN SERİSİNDE ÇİZGİ GRAFİĞİ
+
+```{r}
+df <- economics %>%
+  select(date, psavert, uempmed) %>%
+  gather(key = "variable" , value = "value" , -date)
+head(df, 3)
+
+ggplot(df, aes(date, value)) +
+  geom_line(aes(color = variable , size = 1))
+
+
+```
+
+### ÇOKLU ZAMAN SERİSİNDE ALAN GRAFİĞİ 
+
+bitcoin ile ilgili zaman grafiği için uygun bir grafik olabilir. 
+
+```{r}
+library(tidyr)
+df <- economics %>%
+   select(date, psavert, uempmed) %>%
+   gather(key = "variable" , value = "value" , -date)
+
+
+ggplot(df, aes( date , value )) +
+  geom_line(aes(color= variable , size = 1))
+
+ggplot(df, aes(date,value)) +
+  geom_area(aes(color = variable, fill=variable),
+            alpha= 0.5, position = position_dodge(0.8)
+            )
+```
+
+
+# 5. **ÖRNEKLER**
+
+## *MTCARS* 
+
+ Öncelikle mtcars'ın içinde yer alan dataların kısaltmaları ne anlama geliyor inceliyoruz. 
+ 
+
+(https://rstudio-pubs-static.s3.amazonaws.com/61800_faea93548c6b49cc91cd0c5ef5059894.html)
+
+
+
+![](C:\Users\Kev\Desktop\fotograflar\mtcars.png)
+
+Datamızı çağıralım.
+
+
+```{r warning=FALSE}
+mtcars
+
+```
+
+Bazı istatiksel özelliklerini inceleyelim.
+
+```{r warning=FALSE}
+str(mtcars)
+summary(mtcars)
+```
+
+Mtcars'ın içinde yer alan verileri faktör haline getirelim.
+
+```{r warning=FALSE}
+mtcars$cyl <- as.factor(mtcars$cyl)
+mtcars$vs <- as.factor(mtcars$vs)
+mtcars$am <- as.factor(mtcars$am)
+mtcars$gear <- as.factor(mtcars$gear)
+mtcars$carb <- as.factor(mtcars$carb)
+```
+
+
+faktör haline getirilmiş datamızdan herhangi sütununu çağırabiliyor muyuz diye test edelim. 
+
+```{r warning=FALSE}
+summary(mtcars$mpg)
+```
+
+
+Datamızda kayıp veri var mı? incelemesi yapalım. 
+
+
+```{r warning=FALSE}
+table(is.na(mtcars))
+```
+
+Mtcars datamız da yer alan sütunların isimlerini tekrar sorgulayalım. İsteği bağlı sütun ekleme ya da çıkartma yapılabilir. Fakat ben bu örnekte gerek duymadım.
+
+```{r warning=FALSE}
+names(mtcars)
+```
+
+**soru : Acaba otamatik ve manulel araçların galon başına mil ne kadar? **
+Bu sorunumuzu violin plot yardımıyla inceleyelim. 
+
+```{r warning=FALSE}
+df <- ggplot(data = mtcars, aes(x=am, y=mpg), 
+             draw_quantiles=TRUE)
+
+df + geom_violin( fill = "orange" , alpha = 0.5) + labs(title="Violin Plot",  x="ARAÇ (0 = otomatik, 1 = manuel)",y="Galon başına mil ")
+
+```
+
+Grafik, otomatik vitesli araçlara göre manuel şanzımanlı araçlarda MPG içinbbir yükselişe sebep olmasını görüyoruz.  
+
+otomatik şanzımanlı araçlar için mpg'nin medyan çevresinde  yoğun olduğu 
+manuel için ilk yüzdelik( %25) dilim çevresinde yoğunluk olduğu görülmektedir. 
+
+**soru2- motor ve beygir gücünün ilişkisi hakkında ne diyebiliriz?**
+
+
+yakıt verimliliğin beygir gücüne etkisi;
+
+```{r warning=FALSE}
+ggplot(mtcars, aes(x = hp, y = mpg, color = vs)) +
+  geom_point()
+```
+
+
+
+geom_smooth() komutu verideki trendi çizgi ile özetlemeyi grafiktir.
+
+```{r warning=FALSE}
+ggplot(mtcars, aes(x = hp, y = mpg, color = vs)) +
+geom_smooth( method = "loess" , formula = 'y ~ x')
+```
+
+Şimdi bu iki grafiği birleştiriyoruz; 
+
+```{r warning=FALSE}
+ggplot(mtcars, aes(x = hp, y = mpg, color = vs)) +
+  geom_point() + geom_smooth(method = "loess" , formula = 'y ~ x')
+```
+yorum: grafiğin birleşimleri aykırı değerleri bulmamıza yardımcı oldu.  
+
+Staright motorları için, daha düşük beygir(hp) gücünün ortalama ve maksimum değer arasında daha yüksek mpg verdiğini, 
+
+V-biçimli motorlarda ise, daha yüksek beygir gücüne(hp) rağmen mpg değerlerinin en küçük niceliksel aralıkta ortalamanın altına düştüğünü aktarır.
+
+## *DİAMONDS*
+
+Datamızı çağrıyoruz.
+
+```{r}
+diamonds
+```
+
+
+Verilerimizi incelemek için summary() komutunu çağrıyoruz.
+
+```{r}
+
+d <- diamonds
+summary(d)
+```
+
+verileri inceliyoruz. bakıyorum *carat* belki sürekli değişken olabilir.
+
+*cut* değişkeni yani kaliteleri ile ilgili bir değişken; *fair* good, very good, premium ıdeal bu kategorik olabilir peki ordinal mi diye merak ediyoruz ve bunu araştırıyorum. /str(d)/ ile yapılır.
+
+```{r}
+str(d)
+```
+
+*cut* olan değişkene bakıyorum ve evet diyorum, kategorik ve ordinal yani sıralı bir değişkendir. 
+
+*price* a karşılık bir *cut (kalite)* karşılaştırmak güzel olabilir. sınıf sayısı fazlalaşınca sıkıntı yaratılabilir. 
+
+ilk olarak price'ı görselleştirelim. 
+
+**Soru: Ürünlerimizin fiyat performansı nedir?**
+
+
+Histogram grafiği ile yorumlamaya çalışalım. 
+
+```{r}
+
+ggplot(d, aes(price)) +
+  geom_histogram()
+  
+
+```
+
+
+```{r}
+
+ggplot(d, aes(price)) +
+  geom_histogram(binwidth = 0.5, colour = "brown", size = 2  )
+
+
+```
+
+
+yorum : Satmış olduğumuz ürünlerin skalası var. fiyat dağılımı bu şekilde. ürünlerimin büyük bir çoğunluğu 5000 tlden daha az ürünleri kullanıyorlar.
+
+Tüm veriyi temsil ediyor diye değerlendirmek yanlış olur. Bazı farklı yapılar olabilir. peki bu farklı yapıları nasıl analiz  ederiz?
+
+price'ı hangi kategorik değişkenler etkileyebilir?
+cut(kalite) olabilir. belki color (renk) olabilir.
+
+prize'ın bazı kategorik değişkenlerdeki kırılımını meerak ediyoruz. Görselleştirmeden önce ölçmek istiyorum. ( d%>% )
+
+ilk olarak cut'ı sınıflandırdık. 
+sonra cut'a göre sınıflandırılmış değişkenlerin price ortalama fiyatını verecek.
+
+```{r}
+d %>% group_by(cut) %>% 
+  summarise(n=n() , ort= mean(price))
+
+```
+
+şimdi ortalamalar gözle görülür bir fark yok birbirlerine çok yakın çıktı.Hani sanki bu kategorik çok etkilemiyor gibi geldi. 
+
+```{r}
+
+d %>% group_by(color) %>% 
+  summarise(n=n() , ort= mean(price))
+
+```
+
+Sınıflar arası geçişler yumuşak ama çok sınıf olduğu için D ile J arasında geçiş farkı büyük.Histogramın farklılığı için bu farkı aldım verdim kabul ettim. 
+
+
+```{r}
+d %>% group_by(clarity) %>% 
+  summarise(n=n() , ort= mean(price))
+```
+
+yine çok fark yok 8 sınıfa nazaran. Colorın daha çok etilediğini düşünüyorum. 
+
+
+şimdi color bir kesikli değişken mi? 
+Evet. 
+ya bu kesikli değişkenin frekansı elimizde olcak ya da bu değere karşılık gelen mutluk değer net değer elimizde olmalı. 
+
+O zaman nasıl görselleştirebilirim?
+sütun, çizgi, nokta, pasta kullanabilirim. 
+
+
+```{r}
+
+k<- d %>% group_by(color) %>% 
+  summarise(n=n() , ort= mean(price))
+
+ggplot(k, aes(color, ort)) + 
+  geom_bar(stat = "identity", color ="brown", fill = "gray")
+
+```
+
+
+yoğunluk grafiği
+
+```{r}
+ggplot(d, aes(price, fill =color)) + 
+  geom_density()
+
+```
+
+
+o ilk tablo ile karşılaştrıdık. (brown olan)
+aslında histograma gitmeye bile gerek yok çünkü istediğimize eriştik.
+
+İlk grafikte dedikki tüm veriyi temsil eder mi? priceların yoğunluğunu tüm verinin yoğunluğu olarak mı ifade etmeliyim? tamam yoğunluğum bu ama bu yoğunluğu oluşturan etkenler ne gibi bir araştırmaya gitmiştik.  
+
+youmlamaya gittiğimizde D str(d) yaptığımızda en yüksek değerdi. ama bakıldığında e onu geçmiş yoğonluğu, d yi baskılamış.
+
+
+
+
+```{r}
+ ggplot(d, aes(price, fill =color)) + 
+  geom_density() +
+  geom_histogram(binwidth = 0.5, alpha= 0.5, possiton="identity")
+
+```
+
+# 6. **KAYNAKÇA**
+
+Ders notlarımı oluştururken yardım aldığım eğitim platformları aşağıdaki gibidir. 
+
+
+### UDEMY
+
+Yetişkinlere ve öğrencilere yönelik, alanında profesyonel gönüllü eğitmenler tarafından oluşturulan kursları içeren eğitim teknolojisi, kitlesel çevrimiçi açık ders ve bir çevrimiçi öğrenme platformudur. [https://tr.wikipedia.org/wiki/Udemy]
+
+[udemy](https://www.udemy.com/course/r-programlama/)
+
+![](C:\Users\Kev\Desktop\fotograflar\modernr.png)
+
+
+
+
+### DataCamp
+
+Datacamp, veri bilimleri ile ilgilenen ve bu konuda kendini geliştirmek isteyen herkes için kolaylık sağlayan bir eğitim sitesidir. [ https://www.abprojeyonetimi.com/datacamp-nedir-ne-ise-yarar/]
+
+[datacamp](https://app.datacamp.com/learn/courses/reporting-with-rmarkdown)
+
+![](C:\Users\Kev\Desktop\fotograflar\datacamp.png)
+
+
+
+
+### Mimar Sinan Güzel Sanatlar Üniversitesi
+
+İleri düzey R programlama dersi esnansında aklımda kalan bilgilerin ders notumu hazırlamamda etkisi büyüktür.  
+
+![](C:\Users\Kev\Desktop\fotograflar\mimarsinan.png)
+
+
+
+
+
+
+
+
+
+
+
+
